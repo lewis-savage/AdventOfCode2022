@@ -12,6 +12,20 @@
     }
 }
 
+Result GetResult(Play a, Play b)
+{
+    if (a == b) return Result.Draw;
+    switch (b)
+    {
+        case Play.Rock when a == Play.Scissors:
+        case Play.Paper when a == Play.Rock:
+        case Play.Scissors when a == Play.Paper:
+            return Result.Win;
+        default:
+            return Result.Lose;
+    }
+}
+
 var firstPlays = new Dictionary<char, Play>
 {
     {'A', Play.Rock},
@@ -19,11 +33,11 @@ var firstPlays = new Dictionary<char, Play>
     {'C', Play.Scissors}
 };
 
-var secondPlays = new Dictionary<char, Play>
+var resultMap = new Dictionary<char, Result>()
 {
-    {'X', Play.Rock},
-    {'Y', Play.Paper},
-    {'Z', Play.Scissors}
+    { 'X', Result.Lose },
+    { 'Y', Result.Draw },
+    { 'Z', Result.Win }
 };
 
 var score = 0;
@@ -31,8 +45,15 @@ var score = 0;
 foreach (var line in File.ReadLines("input.txt"))
 {
     var a = firstPlays[line[0]];
-    var b = secondPlays[line[2]];
-    score += Score(a, b) + (int)b + 1;
+    var neededResult = resultMap[line[2]];
+    for (int i = 0; i < 3; i++)
+    {
+        var play = (Play)i;
+        if (GetResult(a, (Play)i) == neededResult)
+        {
+            score += Score(a, play) + i + 1;
+        }
+    }
 }
 
 Console.WriteLine(score);
@@ -42,4 +63,11 @@ internal enum Play
     Rock,
     Paper,
     Scissors
+}
+
+internal enum Result
+{
+    Win,
+    Lose,
+    Draw
 }
