@@ -8,28 +8,29 @@
     return character - 'A' + 27;
 }
 
-char[][] SplitLine(string line)
-{
-    var half = line.Length / 2;
-    return new[] { line[..half].Distinct().ToArray(), line[half..].Distinct().ToArray() };
-}
-
 var sum = 0;
 
+var setIndex = 0;
+HashSet<char>[] groups = new HashSet<char>[3];
 foreach (var line in File.ReadLines("input.txt"))
 {
-    var compartments = SplitLine(line);
-    var hashSet = new HashSet<char>();
-    foreach (var compartment in compartments)
+    groups[setIndex] = line.Distinct().ToHashSet();
+    setIndex++;
+
+    if (setIndex == 3)
     {
-        foreach (var c in compartment)
+        char found = '0';
+        foreach (var c in groups[0])
         {
-            if (!hashSet.Add(c))
+            if (groups[1].Contains(c) && groups[2].Contains(c))
             {
-                sum += GetPriority(c);
+                found = c;
                 break;
             }
         }
+
+        sum += GetPriority(found);
+        setIndex = 0;
     }
 }
 
